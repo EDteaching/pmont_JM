@@ -44,7 +44,6 @@ locale.setlocale(locale.LC_ALL, '')
 ID_BUTTON1 = wx.NewId()
 ID_BUTTON2 = wx.NewId()
 
-#hlist = [0.0, 10.0, 20.0, 30.0]
 
 class Model():
     # Define all the instance variables
