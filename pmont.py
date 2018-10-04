@@ -17,6 +17,7 @@ Created on Wed Mar 23 14:07:50 2016
 # Need to get layout fixed
 # check ra calculation
 # ComboBox not being set properly.
+# Use a Dictionary to hold surface type information
 
 import wx
 # http://wiki.wxpython.org/WxLibPubSub
