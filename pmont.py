@@ -75,7 +75,6 @@ class Model():
         self.SurfaceRs = [40, 40, 70, 100, 0.005, 100, 0.0001, 0.0001]
         # SurfaceA holds albedo values
         self.SurfaceA = [0.25, 0.25, 0.12, 0.2, 0.05, 0.25, 0.25, 0.12]
-
         self.absZero = 273.15        # Absolute zero
         self.stefanC = 0.0000000567  # Stefan-Boltzmann
         self.gamma = 0.66
