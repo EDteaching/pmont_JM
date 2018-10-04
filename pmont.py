@@ -88,7 +88,6 @@ class Model():
         self.LEControl = 0.0
         self.leBarData = [0, 0]
         self.dataset3 = np.empty(shape=[4, 3])
-
         #  svp data from Monteith & Unsworth, PEP, (2014) Table A4
         self.svpData = [
             [268.2,  4.21],  [269.2,  4.55],  [270.2,  4.90],  [271.2,  5.28],
