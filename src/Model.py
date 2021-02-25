@@ -1,4 +1,11 @@
 """
+Created: Tuesday 1st December 2020
+@author: John Moncrieff (j.moncrieff@ed.ac.uk)
+Last Modified on 23 Feb 2021 21:08 
+
+DESCRIPTION
+===========
+This package contains the model class object
 
 """
 
@@ -27,6 +34,7 @@ class Model():
         self.c1_svp = 6790.4985  # constant used in svp calculation
         self.c2_svp = 52.57633
         self.c3_svp = 5.02808
+        self.tlist = [self.airT + 273.15, self.Tw + 273.15, self.Td + 273.15, self.svp, self.vp, self.esTw, self.esTd]
         # Initialize the vegetation types and their characteristics
         # SurfaceD holds Zero-Plane displacements in m
         self.SurfaceD = [0.15, 0.75, 10, 0.05, 0.0005, 0.15, 0.15, 10]
@@ -114,9 +122,9 @@ class Model():
             self.G = 0.1 * self.rn
             self.H = self.rn - self.LE - self.G
             self.mmPerDay = self.LE * 0.035
-            self.hlist = [self.sol, self.reflectedS, self.LDOWN, self.LUP, self.rn, self.H, self.LE, self.G]
             self.tlist = [self.airT + 273.15, self.Tw + 273.15, self.Td + 273.15, self.svp, self.vp, self.esTw, self.esTd]
-            self.showStats(self.hlist,self.tlist)
+            self.rblist = [self.sol, self.reflectedS, self.LDOWN, self.LUP]
+            self.eblist = [self.rn, self.H, self.LE, self.G]
 
         self.dataset3[0][0] = self.airT + 273.15
         self.dataset3[0][1] = self.vp
@@ -135,7 +143,8 @@ class Model():
             ["x": self.Td+273.15, "y": self.vp ]
             ]
         '''
-        # redrawLE()
+        return self.rblist, self.eblist, self.tlist
+
     def c_netShortwave(self):
         # calculates net shortwave radiation
         return (1 - self.SurfaceA[self.index]) * self.sol
@@ -179,8 +188,5 @@ class Model():
                 (0.061 + 0.004 * self.airT + 0.000099 * self.airT * self.airT) *
                 self.rh + (-0.000033 - 0.000005 * self.airT
                            - 0.0000001 * self.airT * self.airT) * self.rh * self.rh)
-            
-    def showStats(self, hlist,tlist):
-        print(hlist[6])
-        return
+
         
