@@ -44,6 +44,7 @@ class View():
         self.esTw = 20  # temp to get MVC running
         self.esTd = 10
         self.figure = plt.figure(figsize=(7,5))
+        self.figure.canvas.toolbar_visible = False
         self.axes1 = self.figure.add_subplot(222)
         self.axes2 = self.figure.add_subplot(224)
         self.axes3 = self.figure.add_subplot(121)
@@ -172,5 +173,5 @@ class View():
         line = mlines.Line2D([self.Tlist[1], self.Tlist[0]], [self.Tlist[5], self.Tlist[4]])
         line.set_color('green')
         self.axes3.add_line(line)
-        #plt.show()
+        self.figure.canvas.toolbar_visible = False
         self.figure.canvas.draw()
