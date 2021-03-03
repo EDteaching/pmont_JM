@@ -1,7 +1,7 @@
 """
 Created: Tuesday 1st December 2020
 @author: John Moncrieff (j.moncrieff@ed.ac.uk)
-Last Modified on 23 Feb 2021 21:08 
+Last Modified on 3 March 2021 15:00 
 
 DESCRIPTION
 ===========
@@ -43,10 +43,17 @@ class View():
         self.Tw = 9.56 + 273.15   # initial dewpoint and wet-bulb temperatures
         self.esTw = 20  # temp to get MVC running
         self.esTd = 10
-        self.figure = plt.figure(figsize=(10,8))
+        self.figure = plt.figure(figsize=(7,5))
         self.axes1 = self.figure.add_subplot(222)
         self.axes2 = self.figure.add_subplot(224)
         self.axes3 = self.figure.add_subplot(121)
+        #self.figure.tight_layout(h_pad=3)
+        plt.subplots_adjust(left=0.1, 
+                    bottom=0.1,  
+                    right=0.9,  
+                    top=0.9,  
+                    wspace=0.4,  
+                    hspace=0.4) 
 
         N = 4  # 4 fluxes to show necessary variables
         self.ind = np.arange(N)  # the x locations for the groups
@@ -95,15 +102,19 @@ class View():
         self.axes3.set_ylim(4, 54)
         self.axes3.set_facecolor('lightgrey')
         self.axes3.grid(axis='both')
-        self.axes3.set_title('Saturation Vapour Pressure vs Air Temperature')
-        self.axes3.set_ylabel('SVP (hPa or mbar')
+        self.axes3.set_title('SVP vs Air Temperature')
+        self.axes3.set_ylabel('SVP (hPa or mbar)')
+        self.axes3.set_xlabel('Air temperature (K)')
         self.axes3.plot(self.x_list, self.y_list)
+        #tlist = [airT, Tw, Td, svp, vp, esTw, esTd]
         self.axes3.plot(self.airT, self.vp, 'bo')
-        self.axes3.annotate('T,e', xy=(self.Tlist[0], self.Tlist[4]))
+        self.axes3.annotate('$T, e_s$', xy=(self.Tlist[0], self.Tlist[3]))
+        self.axes3.plot(self.Tlist[0], self.Tlist[3], 'ro') 
+        self.axes3.annotate('$T,e$', xy=(self.Tlist[0], self.Tlist[4]))
         self.axes3.plot(self.Tlist[1], self.Tlist[5], 'go')    # Tw, svpTw
-        self.axes3.annotate('Tw', xy=(self.Tlist[1], self.Tlist[5]))
+        self.axes3.annotate('$T_w$', xy=(self.Tlist[1], self.Tlist[5]))
         self.axes3.plot(self.Tlist[2], self.Tlist[4], 'bo')    # Td, svpTd
-        self.axes3.annotate('Td', xy=(self.Tlist[2], self.Tlist[4]))
+        self.axes3.annotate('$T_d$', xy=(self.Tlist[2], self.Tlist[4]))
         line = mlines.Line2D([self.Tlist[0], self.Tlist[0]], [self.Tlist[3], self.Tlist[4]])
         line.set_color('red')
         self.axes3.add_line(line)
@@ -138,17 +149,20 @@ class View():
         self.axes3.set_ylim(4, 54)
         self.axes3.set_facecolor('lightgrey')
         self.axes3.grid(axis='both')
-        self.axes3.set_title('Saturation Vapour Pressure vs Air Temperature')
-        self.axes3.set_ylabel('SVP (hPa or mbar')
+        self.axes3.set_title('SVP vs Air Temperature')
+        self.axes3.set_ylabel('SVP (hPa or mbar)')
+        self.axes3.set_xlabel('Air temperature (K)')
         self.x_list = [l[0] for l in self.svpData]
         self.y_list = [l[1] for l in self.svpData]
         self.axes3.plot(self.x_list, self.y_list)
+        self.axes3.annotate('$T, e_s$', xy=(self.Tlist[0], self.Tlist[3]))
+        self.axes3.plot(self.Tlist[0], self.Tlist[3], 'ro')    #
         self.axes3.plot(self.Tlist[0], self.Tlist[4], 'ro')    # T, vp
-        self.axes3.annotate('T,e', xy=(self.Tlist[0], self.Tlist[4]))
+        self.axes3.annotate('$T,e$', xy=(self.Tlist[0], self.Tlist[4]))
         self.axes3.plot(self.Tlist[1], self.Tlist[5], 'go')    # Tw, svpTw
-        self.axes3.annotate('Tw', xy=(self.Tlist[1], self.Tlist[5]))
+        self.axes3.annotate('$T_w$', xy=(self.Tlist[1], self.Tlist[5]))
         self.axes3.plot(self.Tlist[2], self.Tlist[4], 'bo')    # Td, svpTd
-        self.axes3.annotate('Td', xy=(self.Tlist[2], self.Tlist[4]))
+        self.axes3.annotate('$T_d$', xy=(self.Tlist[2], self.Tlist[4]))
         line = mlines.Line2D([self.Tlist[0], self.Tlist[0]], [self.Tlist[3], self.Tlist[4]])
         line.set_color('red')
         self.axes3.add_line(line)

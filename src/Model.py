@@ -1,7 +1,7 @@
 """
 Created: Tuesday 1st December 2020
 @author: John Moncrieff (j.moncrieff@ed.ac.uk)
-Last Modified on 23 Feb 2021 21:08 
+Last Modified on 3 March 2021 15:00 
 
 DESCRIPTION
 ===========
@@ -21,19 +21,23 @@ class Model():
         self.airT = surface["airt"]
         self.vp = surface["vp"]
         self.rs = surface["rs"]
-        self.svp=17.04
-        self.Td = 3.77
-        self.Tw = 9.56  # initial dewpoint and wet-bulb temperatures
-        self.esTw = 20   # temp to get MVC running
-        self.esTd = 10
-        self.NumSurfaceTypes = 8
-        self.one = 1
-        self.sfcs = ["grass","bare Soil","conifers","water"]
-        self.surface = surface["sfc"]
-        self.index = 0
         self.c1_svp = 6790.4985  # constant used in svp calculation
         self.c2_svp = 52.57633
         self.c3_svp = 5.02808
+        self.absZero = 273.15        # Absolute zero
+        self.svp = self.c_satVapPres(self.airT)
+        self.Td = self.dewpoint()
+        self.Tw = self.wetbulb()
+        self.esTw = self.c_satVapPres(self.Tw)
+        self.esTd = self.c_satVapPres(self.Td)
+        self.NumSurfaceTypes = 9
+        self.one = 1
+        self.sfcs = ["grass (dry)", "bare soil (dry)", "cereals (dry)", "conifers (dry)",
+                     "grass (wet)", "bare soil (wet)", "cereals (wet)", "conifers (wet)",
+                     "water"]
+        self.surface = surface["sfc"]
+        self.index = 0
+        
         self.tlist = [self.airT + 273.15, self.Tw + 273.15, self.Td + 273.15, self.svp, self.vp, self.esTw, self.esTd]
         # Initialize the vegetation types and their characteristics
         # SurfaceD holds Zero-Plane displacements in m
@@ -45,7 +49,7 @@ class Model():
         # SurfaceA holds albedo values
         self.SurfaceA = [0.25, 0.25, 0.12, 0.2, 0.05, 0.25, 0.25, 0.12]
 
-        self.absZero = 273.15        # Absolute zero
+        
         self.stefanC = 0.0000000567  # Stefan-Boltzmann
         self.gamma = 0.66
         # psychrometric constant for temperatures in
@@ -125,7 +129,7 @@ class Model():
             self.tlist = [self.airT + 273.15, self.Tw + 273.15, self.Td + 273.15, self.svp, self.vp, self.esTw, self.esTd]
             self.rblist = [self.sol, self.reflectedS, self.LDOWN, self.LUP]
             self.eblist = [self.rn, self.H, self.LE, self.G]
-
+            self.olist = [self.rs, self.rh, self.LE]
         self.dataset3[0][0] = self.airT + 273.15
         self.dataset3[0][1] = self.vp
         self.dataset3[1][0] = self.airT + 273.15
@@ -143,7 +147,7 @@ class Model():
             ["x": self.Td+273.15, "y": self.vp ]
             ]
         '''
-        return self.rblist, self.eblist, self.tlist
+        return self.rblist, self.eblist, self.tlist, self.olist
 
     def c_netShortwave(self):
         # calculates net shortwave radiation
