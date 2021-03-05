@@ -1,7 +1,7 @@
 """
 Created: Tuesday 1st December 2020
 @author: John Moncrieff (j.moncrieff@ed.ac.uk)
-Last Modified on 3 March 2021 15:00 
+Last Modified on 5 March 2021 14:00 
 
 DESCRIPTION
 ===========
@@ -17,7 +17,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-class View():    
+class View():   
+    '''
+    The main view class
+    ''' 
     def __init__(self, rblist, eblist, tlist):
         self.RBlist = rblist
         self.EBlist = eblist
@@ -62,7 +65,7 @@ class View():
 
         self.rects = self.axes1.bar(self.ind, self.RBlist, self.width, align='center')
         self.rects[0].set_color('yellow')
-        self.rects[1].set_color('yellow')
+        self.rects[1].set_color('orange')
         self.rects[2].set_color('black')
         self.rects[3].set_color('darkgray')
         self.axes1.set_xlim(None, len(self.ind) + self.width)
@@ -80,7 +83,7 @@ class View():
         self.EBlist = eblist
         #ax2 = fig.add_subplot(3,2,1)
         self.rects2 = self.axes2.bar(self.ind, self.EBlist, self.width, align='center')
-        self.rects2[0].set_color('black')
+        self.rects2[0].set_color('green')
         self.rects2[1].set_color('red')
         self.rects2[2].set_color('blue')
         self.rects2[3].set_color('brown')

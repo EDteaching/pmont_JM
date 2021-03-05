@@ -1,7 +1,7 @@
 """
 Created: Tuesday 1st December 2020
 @author: John Moncrieff (j.moncrieff@ed.ac.uk)
-Last Modified on 3 March 2021 15:00 
+Last Modified on 5 March 2021 15:40 
 
 DESCRIPTION
 ===========
@@ -38,7 +38,9 @@ class pminterface():
         self.mod = Model(self.inpt)
         self.tlist = self.mod.tlist
         self.vw = View(self.rblist, self.eblist, self.tlist)
-        self.sfcs = ["grass (dry)","bare soil (dry)","cereals (dry)", "conifers (dry)","grass (wet)", "cereals (wet)","conifers (wet)", "water"]
+        self.sfcs = ["grass (dry)","bare soil (dry)","cereals (dry)",
+            "conifers (dry)","upland (dry)","grass (wet)", "bare soil (wet)",
+            "cereals (wet)","conifers (wet)", "upland (wet)", "water"]
         self.bit_wind = widgets.BoundedIntText(value = self.inpt["wind"], min=1,  max=15, step=1, 
                                      description="u ($m \ s^{-1}$)", width=50)
         self.bit_solar = widgets.BoundedIntText(value = self.inpt["solar"], min=1, max=1000, step=10, 
@@ -55,6 +57,12 @@ class pminterface():
         self.txt_rh  = widgets.Text(description="RH (%)")                              
         self.txt_le = widgets.Text(description="LE")
         self.txt_ra = widgets.Text(description="ra")
+        # First time round to populate output boxes
+        self.rblist, self.eblist, self.tlist, self.olist = self.mod.calculateLE(self.inpt)
+        self.txt_rs.value = str('{0:.0f}'.format(self.olist[0]))
+        self.txt_rh.value = str('{0:.1f}'.format(self.olist[1]))
+        self.txt_le.value = str('{0:.1f}'.format(self.olist[2]))
+        self.txt_ra.value = str('{0:.0f}'.format(self.olist[3]))
         
         self.bit_wind.observe(self.bit_wind_eventhandler, names='value')
         self.bit_solar.observe(self.bit_solar_eventhandler, names='value')
@@ -67,11 +75,26 @@ class pminterface():
         self.h2 = widgets.HBox(children=[self.bit_airt, self.bit_vp, self.txt_rh])
         self.h3 = widgets.HBox(children=[self.txt_ra, self.txt_rs, self.txt_le])
         
+    def reset_sfc(self,sfc):
+        self.inpt= {            # just the default to start with
+                        "wind": 3,
+                        "solar": 500,
+                         "albedo": self.mod.srftype[sfc]['albedo'], 
+                         "airt": 15,
+                         "sfc": sfc,
+                         "rs": self.mod.srftype[sfc]['minrs'],
+                         "vp": 10,
+                         "smd": 10
+                        }
+        self.rblist = [500.0, -30.0, 300.0, 200.0]
+        self.eblist = [300.0, 100.0, 150.0, 200.0]
+        return self.inpt
+        
     def func2(self, x, a, b, c):
         '''
         returns bulk surface resistance
         from a polynomial fit to Graham Russell's Data
-        x = smd
+        x is smd, a,b,c are polynomial fit
         '''
         return a*x**3+b*x+c
            
@@ -91,7 +114,7 @@ class pminterface():
         # Use Russell fit to find rs from smd
         # Check that rs offset varies by surface
         self.inpt["rs"] = self.func2(self.inpt["smd"], self.smdfit[0],
-            self.smdfit[1], self.smdfit[2])
+            self.smdfit[1], self.mod.srftype[self.inpt["sfc"]]['minrs'])
         self.rblist, self.eblist, self.tlist, self.olist = self.mod.calculateLE(self.inpt)
         self.txt_rs.value = str('{0:.0f}'.format(self.olist[0]))
         self.txt_rh.value = str('{0:.1f}'.format(self.olist[1]))
@@ -102,10 +125,17 @@ class pminterface():
     def dd_surface_eventhandler(self,change):
         self.dd_surface.observe(self.dd_surface_eventhandler, names='value')
         self.inpt["sfc"]=self.dd_surface.value
+        self.inpt = self.reset_sfc(self.inpt["sfc"])
+        self.bit_solar.value = self.inpt["solar"]
+        self.bit_wind.value = self.inpt["wind"]
+        self.bit_vp.value = self.inpt["vp"]
+        self.bit_smd.value = self.inpt["smd"]
+        self.bit_airt.value = self.inpt["airt"]
         self.rblist, self.eblist, self.tlist, self.olist = self.mod.calculateLE(self.inpt)
         self.txt_rs.value = str('{0:.0f}'.format(self.olist[0]))
         self.txt_rh.value = str('{0:.1f}'.format(self.olist[1]))
         self.txt_le.value = str('{0:.1f}'.format(self.olist[2]))
+        self.txt_ra.value = str('{0:.0f}'.format(self.olist[3]))
         self.vw.redraw(self.rblist, self.eblist, self.tlist)
         
     def bit_solar_eventhandler(self,change):
@@ -115,6 +145,7 @@ class pminterface():
         self.txt_rs.value = str('{0:.0f}'.format(self.olist[0]))
         self.txt_rh.value = str('{0:.1f}'.format(self.olist[1]))
         self.txt_le.value = str('{0:.1f}'.format(self.olist[2]))
+        self.txt_ra.value = str('{0:.0f}'.format(self.olist[3]))
         self.vw.redraw(self.rblist, self.eblist, self.tlist)
 
     def bit_vp_eventhandler(self,change):
@@ -124,6 +155,7 @@ class pminterface():
         self.txt_rs.value = str('{0:.0f}'.format(self.olist[0]))
         self.txt_rh.value = str('{0:.1f}'.format(self.olist[1]))
         self.txt_le.value = str('{0:.1f}'.format(self.olist[2]))
+        self.txt_ra.value = str('{0:.0f}'.format(self.olist[3]))
         self.vw.redraw(self.rblist, self.eblist, self.tlist)
 
     def bit_airt_eventhandler(self,change):
@@ -133,4 +165,5 @@ class pminterface():
         self.txt_rs.value = str('{0:.0f}'.format(self.olist[0]))
         self.txt_rh.value = str('{0:.1f}'.format(self.olist[1]))
         self.txt_le.value = str('{0:.1f}'.format(self.olist[2]))
+        self.txt_ra.value = str('{0:.0f}'.format(self.olist[3]))
         self.vw.redraw(self.rblist, self.eblist, self.tlist)
